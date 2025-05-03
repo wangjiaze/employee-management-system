@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div style="width: 80%; margin: 0 auto;">
+        <h1>Employee Analytics Dashboard</h1>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <div style="width: 45%;">
+                <h2>Employees per Department</h2>
+                <canvas id="departmentChart"></canvas>
+            </div>
+            <div style="width: 45%;">
+                <h2>Monthly Attendance Overview</h2>
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch department data
+        fetch('/api/charts/department-distribution/')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('departmentChart');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)',
+                                'rgba(255, 159, 64, 0.7)',
+                                'rgba(199, 199, 199, 0.7)',
+                                'rgba(83, 102, 255, 0.7)',
+                            ],
+                        }]
+                    },
+                });
+            });
+
+        // Fetch attendance data
+        fetch('/api/charts/attendance-overview/')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('attendanceChart');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Present',
+                            data: data.present,
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        },
+                        {
+                            label: 'Late',
+                            data: data.late,
+                            backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                        },
+                        {
+                            label: 'Absent',
+                            data: data.absent,
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
